@@ -1,5 +1,12 @@
-body {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html, body {
   margin: 0;
+  padding: 0;
+}
+body {
+  @apply bg-slate-900;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -10,4 +17,34 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* 파이어폭스에서의 초기화 방법 */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.ipt-text {
+  @apply py-2 px-4 font-semibold rounded-lg shadow-md text-gray-900 text-center;
+}
+.ipt-checkbox {
+  @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600;
+}
+.btn {
+  @apply py-2 px-4 font-semibold rounded-full shadow-md;
+}
+.btn-gradient {
+  @apply text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center;
+}
+.lotto-ball {
+  @apply inline-flex justify-center items-center h-6 w-6 m-2 rounded-full font-semibold text-white;
+}
+h2 {
+  @apply ml-2 mb-2 font-extrabold text-3xl leading-none tracking-tight text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400;
 }

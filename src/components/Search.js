@@ -21,13 +21,15 @@ function Search({inputValue, setInputValue, setIsLoading, setTurnRange}) {
     }
 
     return (
-        <div className="search-area">
-            <input type="number" id="oldPrd" min="1" max="9999" className="prdInput" data-part="from" onInput={updateTurnRange} value={inputValue.from || ''} />
-            <label htmlFor="oldPrd"> 회</label>
-            ~
-            <input type="number" id="latestPrd" min="1" max="9999" className="prdInput" data-part="to" onInput={updateTurnRange} value={inputValue.to || ''} />
-            <label htmlFor="latestPrd"> 회</label>
-            <button type="button" className="btn-list" onClick={onClick}>당첨번호 정보</button>
+        <div className="search-area flex justify-center items-center mt-10">
+            <input type="number" id="oldPrd" min="1" max="999999" className="ipt-text" data-part="from"
+                   onInput={updateTurnRange} onKeyUp={e => e.keyCode === 13 ? onClick() : null} value={inputValue.from || ''}/>
+            <label htmlFor="oldPrd" className="ml-1"> 회</label>
+            &nbsp;~&nbsp;
+            <input type="number" id="latestPrd" min="1" max="999999" className="ipt-text" data-part="to"
+                   onInput={updateTurnRange} onKeyUp={e => e.keyCode === 13 ? onClick() : null} value={inputValue.to || ''}/>
+            <label htmlFor="latestPrd" className="ml-1"> 회</label>
+            <button type="button" className="btn btn-gradient ml-5" onClick={onClick}>당첨번호 정보 검색</button>
         </div>
     )
 }

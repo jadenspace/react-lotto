@@ -2,15 +2,20 @@ import {useEffect, useState} from "react";
 
 function Amount({bonus, numbers}) {
     const [bonusChecked, setBonusChecked] = useState(false)
-    const footTd = () => {
+    const footTr = () => {
         const result = []
         for (let i = 1; i <= 45; i++) {
-            const name = `color${Math.ceil(i / 10)}`
-                result.push(<td key={i}><span className={name}>{i}</span></td>)
+            const colorType = Math.floor(i / 10)
+            const name = `color${colorType}`
+                result.push(<td key={i}><span className={`${name} lotto-ball bg-lotto-${colorType}-500`}>{i}</span></td>)
         }
-        return result
+        return (
+            <tr>
+                {result}
+            </tr>
+        )
     }
-    const bodyTd = () => {
+    const bodyTr = () => {
         const result = []
         const numbersCopy = bonusChecked ? [...numbers, ...bonus] : numbers.slice(0)
         const accInfo = numbersCopy.reduce((acc,cur) => {
@@ -24,41 +29,47 @@ function Amount({bonus, numbers}) {
         for (let i = 1; i <= 45; i++) {
             const thisAccNum = accInfo[i] ? accInfo[i] : 0
             result.push(
-                <td key={i}>
-                    <span>{thisAccNum}</span>
-                    <div className="graph" style={{height: `${200 * thisAccNum / latestNum }px`}}></div>
+                <td className="align-bottom text-center" key={i}>
+                    <div className="flex justify-center items-end relative" style={{height: `200px`}}>
+                        <span className={`w-3/4 block graph bg-gray-${thisAccNum === latestNum ? 400 : 500} rounded-t-2xl transition-all duration-300 pt-2`} style={{height: `${200 * thisAccNum / latestNum }px`}}>{thisAccNum || ''}</span>
+                    </div>
                 </td>
             )
         }
-        return result
+        return (
+            <tr className="number">
+                {result}
+
+            </tr>
+        )
     }
     const toggleWithBonus = () => {
         setBonusChecked(current => !current)
     }
 
     useEffect(() => {
-        bodyTd()
+        bodyTr()
     }, [bonusChecked])
 
 
     return (
-        <div id="amount">
+        <div id="amount" className="w-full overflow-hidden mt-10">
             <h2>번호별 당첨 횟수</h2>
-            (
-            <label htmlFor="bonus-checkbox">보너스포함: </label>
-            <input type="checkbox" id="bonus-checkbox" name="bonus_checkbox" onChange={toggleWithBonus} checked={bonusChecked} />
-            )
-            <div className="tbl-wrap">
+            <div className="flex justify-end items-center mb-4 mr-5">
+                <label htmlFor="bonus-checkbox"
+                       className="ml-2 text-base font-medium text-gray-900 dark:text-gray-300">보너스 포함</label>
+                &nbsp;
+                <input type="checkbox"
+                       id="bonus-checkbox" name="bonus_checkbox" onChange={toggleWithBonus} checked={bonusChecked}
+                       className="ipt-checkbox" />
+            </div>
+            <div className="tbl-wrap overflow-y-auto">
                 <table className="tbl-amount">
                     <tfoot>
-                    <tr>
-                        {footTd()}
-                    </tr>
+                    {footTr()}
                     </tfoot>
                     <tbody>
-                    <tr className="number">
-                        {bodyTd()}
-                    </tr>
+                    {bodyTr()}
                     </tbody>
                 </table>
             </div>
