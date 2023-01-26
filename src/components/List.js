@@ -1,7 +1,11 @@
-function List({turnRange, lottoInfo}) {
+import {useContext} from "react";
+import { LottoContext } from './Home';
+
+function List() {
+    const {fromRound, toRound, lottoInfo} = useContext(LottoContext)
     const bodyTr = () => {
         let selectLottoInfo = {}
-        for (let i = turnRange.from; i <= turnRange.to; i++) {
+        for (let i = fromRound; i <= toRound; i++) {
             if (lottoInfo[i]) {
                 selectLottoInfo[i] = lottoInfo[i]
             }
@@ -15,7 +19,9 @@ function List({turnRange, lottoInfo}) {
             })
             const bonus = <span className={`lotto-ball bg-lotto-${Math.floor(info[1].bonus_no / 10)}-500`}>{info[1].bonus_no}</span>
             const winners = info[1].winners_combination
-                ? `${info[1].winners_combination.auto || 0} / ${info[1].winners_combination.manual || 0} / ${info[1].winners_combination.semi_auto || 0}`
+                ? <>
+                    {(info[1].winners_combination.auto || 0) + (info[1].winners_combination.manual || 0)} <br /> ({info[1].winners_combination.auto || 0} / {info[1].winners_combination.manual || 0})
+                </>
                 : ''
             const date = info[1].date.split('T')[0]
 
@@ -42,7 +48,7 @@ function List({turnRange, lottoInfo}) {
                             <th scope="col" className="border border-slate-600">회차</th>
                             <th scope="col" className="border border-slate-600">당첨번호</th>
                             <th scope="col" className="border border-slate-600">보너스번호</th>
-                            <th scope="col" className="border border-slate-600">1등당첨자<br /><sub>(합/자동/수동)</sub></th>
+                            <th scope="col" className="border border-slate-600">1등당첨자<br /><sub>(자동 / 수동)</sub></th>
                             <th scope="col" className="border border-slate-600">날짜</th>
                         </tr>
                     </thead>

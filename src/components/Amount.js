@@ -1,6 +1,8 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useContext} from "react";
+import { LottoContext } from './Home';
 
-function Amount({bonus, numbers}) {
+function Amount() {
+    const { bonus, numbers } = useContext(LottoContext)
     const [bonusChecked, setBonusChecked] = useState(false)
     const footTr = () => {
         const result = []
@@ -29,7 +31,7 @@ function Amount({bonus, numbers}) {
         for (let i = 1; i <= 45; i++) {
             const thisAccNum = accInfo[i] ? accInfo[i] : 0
             result.push(
-                <td className="align-bottom text-center" key={i}>
+                <td className="align-bottom overflow-hidden text-center" key={i}>
                     <div className="flex justify-center items-end relative" style={{height: `200px`}}>
                         <span className={`w-3/4 block graph bg-gray-${thisAccNum === latestNum ? 400 : 500} rounded-t-2xl transition-all duration-300 pt-2`} style={{height: `${200 * thisAccNum / latestNum }px`}}>{thisAccNum || ''}</span>
                     </div>
@@ -39,7 +41,6 @@ function Amount({bonus, numbers}) {
         return (
             <tr className="number">
                 {result}
-
             </tr>
         )
     }
@@ -50,7 +51,6 @@ function Amount({bonus, numbers}) {
     useEffect(() => {
         bodyTr()
     }, [bonusChecked])
-
 
     return (
         <div id="amount" className="w-full overflow-hidden mt-10">
@@ -66,10 +66,10 @@ function Amount({bonus, numbers}) {
             <div className="tbl-wrap overflow-y-auto">
                 <table className="tbl-amount">
                     <tfoot>
-                    {footTr()}
+                        {footTr()}
                     </tfoot>
                     <tbody>
-                    {bodyTr()}
+                        {bodyTr()}
                     </tbody>
                 </table>
             </div>
