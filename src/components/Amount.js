@@ -57,14 +57,14 @@ function Amount() {
             <h2>번호별 당첨 횟수</h2>
             <div className="flex justify-end items-center mb-4 mr-5">
                 <label htmlFor="bonus-checkbox"
-                       className="ml-2 text-base font-medium text-gray-900 dark:text-gray-300">보너스 포함</label>
+                       className="ml-2 text-base font-medium text-gray-900 text-gray-300">보너스 포함</label>
                 &nbsp;
                 <input type="checkbox"
                        id="bonus-checkbox" name="bonus_checkbox" onChange={toggleWithBonus} checked={bonusChecked}
                        className="ipt-checkbox" />
             </div>
             <div className="tbl-wrap overflow-y-auto">
-                <table className="tbl-amount">
+                <table className="tbl-amount table m-auto">
                     <tfoot>
                         {footTr()}
                     </tfoot>

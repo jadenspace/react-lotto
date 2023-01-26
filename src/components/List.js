@@ -26,7 +26,7 @@ function List() {
             const date = info[1].date.split('T')[0]
 
             return (
-                <tr key={idx} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-gray-50 hover:bg-gray-600">
+                <tr key={idx} className="bg-gray-800 border-b border-gray-700 text-gray-50 hover:bg-gray-600">
                     <td>{turn}</td>
                     <td>{numbers}</td>
                     <td>{bonus}</td>
@@ -43,7 +43,7 @@ function List() {
             <h2>회차별 당첨번호 정보</h2>
             <div className="tbl-wrap">
                 <table className="border-collapse border border-slate-500 w-full text-center">
-                    <thead className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <thead className="text-gray-700 uppercase bg-gray-50 bg-gray-700 text-gray-400">
                         <tr>
                             <th scope="col" className="border border-slate-600">회차</th>
                             <th scope="col" className="border border-slate-600">당첨번호</th>
