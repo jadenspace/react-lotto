@@ -1,8 +1,8 @@
-import { useContext } from 'react';
+import {useContext, useEffect, useLayoutEffect, useState} from 'react';
 import { LottoContext } from './Home';
 
 function Search() {
-    const {setInputValue, setIsSearch, inputValue, setFromRound, setToRound, isProgress} = useContext(LottoContext)
+    const {lastestNumber, inputValue, setInputValue, setSearchMode, isSearch, setIsSearch, setFromRound, setToRound, fromRound, toRound, setIsProgress} = useContext(LottoContext)
     const updateTurnRange = (e) => {
         const obj = {}
         obj[e.target.dataset.part] = +e.target.value
@@ -11,29 +11,40 @@ function Search() {
             ...obj
         }))
     }
+
+    const getPossibleValue = (value) => Math.min(lastestNumber+1, Math.max(1, value))
     const onClick = () => {
         setIsSearch(true)
         if (inputValue.from > inputValue.to) {
-            setFromRound(inputValue.to)
-            setToRound(inputValue.from)
+            setFromRound(getPossibleValue(inputValue.to))
+            setToRound(getPossibleValue(inputValue.from))
         } else {
-            setFromRound(inputValue.from)
-            setToRound(inputValue.to)
+            setFromRound(getPossibleValue(inputValue.from))
+            setToRound(getPossibleValue(inputValue.to))
         }
+        setIsProgress(true)
+        setSearchMode(true)
     }
+
+    useEffect(() => {
+        setInputValue({
+            from: fromRound,
+            to: toRound
+        })
+    }, [fromRound, toRound])
 
     return (
         <div className="search-area flex justify-center items-center mt-10">
-            <input type="number" id="oldPrd" min="1" className="ipt-text" data-part="from"
-                   onInput={updateTurnRange} onKeyUp={e => e.keyCode === 13 ? onClick() : null} value={inputValue.from || ''}/>
+            <input type="number" id="oldPrd" min="1" max={lastestNumber+1} className="ipt-text" data-part="from"
+                   onInput={updateTurnRange} onKeyUp={e => e.keyCode === 13 ? onClick() : null} value={inputValue.from || ''} required/>
             <label htmlFor="oldPrd" className="ml-1"> 회</label>
             &nbsp;~&nbsp;
-            <input type="number" id="latestPrd" min="1" className="ipt-text" data-part="to"
-                   onInput={updateTurnRange} onKeyUp={e => e.keyCode === 13 ? onClick() : null} value={inputValue.to || ''}/>
+            <input type="number" id="latestPrd" min="1" className="ipt-text" data-part="to" max={lastestNumber+1}
+                   onInput={updateTurnRange} onKeyUp={e => e.keyCode === 13 ? onClick() : null} value={inputValue.to || ''} required/>
             <label htmlFor="latestPrd" className="ml-1"> 회</label>
             <button type="button" className="btn btn-gradient ml-5" onClick={onClick}>
                 {
-                    !isProgress
+                    !isSearch
                         ? '당첨번호 정보 검색'
                         : <div role="status">
                             <svg aria-hidden="true"

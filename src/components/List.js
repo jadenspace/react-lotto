@@ -2,15 +2,9 @@ import {useContext} from "react";
 import { LottoContext } from './Home';
 
 function List() {
-    const {fromRound, toRound, lottoInfo} = useContext(LottoContext)
+    const { selectLottoInfo } = useContext(LottoContext)
     const bodyTr = () => {
-        let selectLottoInfo = {}
-        for (let i = fromRound; i <= toRound; i++) {
-            if (lottoInfo[i]) {
-                selectLottoInfo[i] = lottoInfo[i]
-            }
-        }
-        const result = Object.entries(selectLottoInfo).map((info, idx) => {
+        const result = Object.entries(JSON.parse(selectLottoInfo)).map((info, idx) => {
             const turn = `제 ${info[0]} 회`
             const numbers = info[1].numbers.map((number, i) => {
                 const colorType = Math.floor(number / 10)

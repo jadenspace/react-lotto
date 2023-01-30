@@ -11,56 +11,45 @@ const LATEST_URL = `https://smok95.github.io/lotto/results/latest.json`;
 const getRoundInfoUrl = (num) => `https://smok95.github.io/lotto/results/${num}.json`;
 
 function Home() {
-    // round
-    const [isSearch, setIsSearch] = useState(false)
+    const [lastestNumber, setLatestNumber] = useState(99999)
+    const [searchMode, setSearchMode] = useState(false)
+    const [isSearch, setIsSearch] = useState(true)
+    const [isProgress, setIsProgress] = useState(true)
     const [fromRound, setFromRound] = useState('')
     const [toRound, setToRound] = useState('')
-
-    const [isProgress, setIsProgress] = useState(true)
     const [inputValue, setInputValue] = useState({})
+    const [selectLottoInfo, setSelectLottoInfo] = useState({})
 
-    // lottoinfo
-    const [lottoInfo, setLottoInfo] = useState({})
-
-    // amount
-    const [numbers, setNumbers] = useState([])
-    const [bonus, setBonus] = useState([])
-
-
-    let latestIndex
+    let latestDrawNo
     let from
     let to
     let valueFromTo = []
-    let info = {}
+    let latestIndex
 
-    // 첫 로드시 체크
-    const { isSuccess: isSuccessLatest, isError: isErrorLatest, data: dataLatest } = useQuery(
+    const { data: dataLatest } = useQuery(
         ['latest'],
         () => axios.get(LATEST_URL)
     )
-    if (dataLatest && isSuccessLatest) {
-        const { data } = dataLatest
-        const index = data.draw_no - 1
-
-        from = !isSearch ? Math.max(0, index - 20) + 1 : Math.max(1,Math.min(index + 1, fromRound))
-        to = !isSearch ? index + 1 : Math.max(1,Math.min(index + 1, toRound))
+    const init = () => {
+        latestDrawNo = dataLatest?.data.draw_no - 1
+        from = !searchMode ? Math.max(0, latestDrawNo - 20) + 1 : fromRound
+        to = !searchMode ? latestDrawNo + 1 : toRound
         for (let i = from; i <= to; i++) {
-            if (!lottoInfo.hasOwnProperty(i)) {
-                valueFromTo.push(i)
-            }
+            valueFromTo.push(i)
         }
-        if (fromRound !== from) {
+        latestIndex = latestDrawNo
+    }
+    init()
+    useEffect(() => {
+        if (!!latestIndex) {
+            setLatestNumber(latestDrawNo)
             setFromRound(from)
-        }
-        if (toRound !== to) {
             setToRound(to)
         }
-        latestIndex = index
-    }
-
+    } , [latestIndex])
 
     const ress = useQueries(
-        valueFromTo.map((number) => {
+        valueFromTo?.map((number) => {
             return {
                 queryKey: ['lotto', number],
                 queryFn: () => axios.get(getRoundInfoUrl(number)),
@@ -68,67 +57,24 @@ function Home() {
             }
         })
     )
-
-    if (ress.length && !isProgress) {
-        setIsProgress(true)
-    }
-    if (ress.length && ress.every(res => res.data && !res.isLoading)) {
-        ress.map((res, idx) => {
-            const { data } = res.data
-            const { date, numbers, bonus_no, divisions, winners_combination } = data
-            info[data.draw_no] = { date, numbers, bonus_no, divisions, winners_combination }
-        })
-
-        setLottoInfo(current => {
-            return {...current, ...info}
-        })
-        setIsProgress(false)
-    }
-
-
     useEffect(() => {
-        setInputValue(current => ({
-            ...current,
-            from: fromRound
-        }))
-    }, [fromRound])
-    useEffect(() => {
-        setInputValue(current => ({
-            ...current,
-            to: toRound
-        }))
-    }, [toRound])
-
-    useEffect(() => {
-        updateNumbers()
-        updateBonus()
-    }, [lottoInfo])
-
-    const updateNumbers = () => {
-        const arr = []
-        for (let i = fromRound; i <= toRound; i++) {
-            if (lottoInfo.hasOwnProperty(i)) {
-                arr.push(...lottoInfo[i].numbers)
-            }
+        if (ress.length && !ress.some(res => res.isLoading)) {
+            const info = JSON.stringify(
+                Object.fromEntries(
+                    ress.map((res, idx) => {
+                        const { data } = res.data
+                        const { date, numbers, bonus_no, divisions, winners_combination } = data
+                        return [data.draw_no, { date, numbers, bonus_no, divisions, winners_combination }]
+                    })
+                )
+            )
+            setSelectLottoInfo(info)
+            setIsProgress(false)
+            setIsSearch(false)
         }
-        setNumbers(arr)
-    }
-    const updateBonus = () => {
-        const arr = []
-        for (let i = fromRound; i <= toRound; i++) {
-            if (lottoInfo.hasOwnProperty(i)) {
-                arr.push(lottoInfo[i].bonus_no)
-            }
-        }
-        setBonus(arr)
-    }
+    }, [valueFromTo])
 
-    if (isErrorLatest) {
-        return <div role="status" className="loading-area">
-            <span className="text-white">Error 발생!</span>
-        </div>
-    }
-    if (isProgress && !isSearch) {
+    if (isProgress && !searchMode) {
         return <div role="status" className="loading-area">
             <svg aria-hidden="true"
                  className="inline w-6 h-6 text-gray-200 animate-spin text-gray-700 fill-gray-400"
@@ -145,7 +91,7 @@ function Home() {
     }
 
     return (
-        <LottoContext.Provider value={{setIsSearch, isProgress, setIsProgress, inputValue, setInputValue, fromRound, setFromRound, toRound, setToRound, numbers, bonus, lottoInfo }}>
+        <LottoContext.Provider value={{lastestNumber, inputValue, setInputValue, selectLottoInfo, searchMode, setSearchMode, isSearch, setIsSearch, isProgress, setIsProgress, fromRound, setFromRound, toRound, setToRound }}>
             <div className="layout overflow-hidden text-white">
                 <Search />
                 <Amount  />

@@ -2,7 +2,13 @@ import {useEffect, useState, useContext} from "react";
 import { LottoContext } from './Home';
 
 function Amount() {
-    const { bonus, numbers } = useContext(LottoContext)
+    const { selectLottoInfo } = useContext(LottoContext)
+    let bonus = []
+    let numbers = []
+    Object.entries(JSON.parse(selectLottoInfo)).map((info, idx) => {
+        numbers.push(...info[1].numbers)
+        bonus.push(info[1].bonus_no)
+    })
     const [bonusChecked, setBonusChecked] = useState(false)
     const footTr = () => {
         const result = []
