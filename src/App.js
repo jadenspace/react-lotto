@@ -1,4 +1,5 @@
 import React from 'react';
+import {RecoilRoot} from 'recoil';
 import {
     BrowserRouter as Router,
     Switch,
@@ -8,13 +9,15 @@ import Home from './components/Home'
 
 function App() {
     return (
-        <Router>
-            <Switch>
-                <Route path="/">
-                    <Home />
-                </Route>
-            </Switch>
-        </Router>
+        <RecoilRoot>
+            <Router>
+                <Switch>
+                    <Route path="/lotto">
+                        <Home />
+                    </Route>
+                </Switch>
+            </Router>
+        </RecoilRoot>
     );
 }
 

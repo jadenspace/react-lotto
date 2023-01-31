@@ -1,8 +1,10 @@
-import {useContext, useEffect, useLayoutEffect, useState} from 'react';
-import { LottoContext } from './Home';
+import {useContext} from 'react';
+import {useRecoilState} from 'recoil';
+import { inputValueState, LottoContext } from './Home';
 
 function Search() {
-    const {lastestNumber, inputValue, setInputValue, setSearchMode, isSearch, setIsSearch, setFromRound, setToRound, fromRound, toRound, setIsProgress} = useContext(LottoContext)
+    const {lastestNumber, setSearchMode, isSearch, setIsSearch, setFromRound, setToRound, setIsProgress} = useContext(LottoContext)
+    const [inputValue, setInputValue] = useRecoilState(inputValueState)
     const updateTurnRange = (e) => {
         const obj = {}
         obj[e.target.dataset.part] = +e.target.value
@@ -14,24 +16,27 @@ function Search() {
 
     const getPossibleValue = (value) => Math.min(lastestNumber+1, Math.max(1, value))
     const onClick = () => {
-        setIsSearch(true)
+        const fromValue = getPossibleValue(inputValue.from)
+        const toValue = getPossibleValue(inputValue.to)
         if (inputValue.from > inputValue.to) {
-            setFromRound(getPossibleValue(inputValue.to))
-            setToRound(getPossibleValue(inputValue.from))
+            setFromRound(toValue)
+            setToRound(fromValue)
+            setInputValue({
+                from: toValue,
+                to: fromValue
+            })
         } else {
-            setFromRound(getPossibleValue(inputValue.from))
-            setToRound(getPossibleValue(inputValue.to))
+            setFromRound(fromValue)
+            setToRound(toValue)
+            setInputValue({
+                from: fromValue,
+                to: toValue
+            })
         }
         setIsProgress(true)
         setSearchMode(true)
+        setIsSearch(true)
     }
-
-    useEffect(() => {
-        setInputValue({
-            from: fromRound,
-            to: toRound
-        })
-    }, [fromRound, toRound])
 
     return (
         <div className="search-area flex justify-center items-center mt-10">

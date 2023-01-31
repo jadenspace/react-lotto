@@ -1,14 +1,9 @@
-import {useEffect, useState, useContext} from "react";
-import { LottoContext } from './Home';
+import {useMemo, useState} from "react";
+import {useRecoilValue} from "recoil";
+import { selectLottoInfoState } from './Home';
 
 function Amount() {
-    const { selectLottoInfo } = useContext(LottoContext)
-    let bonus = []
-    let numbers = []
-    Object.entries(JSON.parse(selectLottoInfo)).map((info, idx) => {
-        numbers.push(...info[1].numbers)
-        bonus.push(info[1].bonus_no)
-    })
+    const selectLottoInfo = useRecoilValue(selectLottoInfoState)
     const [bonusChecked, setBonusChecked] = useState(false)
     const footTr = () => {
         const result = []
@@ -23,8 +18,14 @@ function Amount() {
             </tr>
         )
     }
-    const bodyTr = () => {
+    const bodyTr = (selectLottoInfo, bonusChecked) => {
+        const bonus = []
+        const numbers = []
         const result = []
+        Object.entries(JSON.parse(selectLottoInfo)).map((info, idx) => {
+            numbers.push(...info[1].numbers)
+            bonus.push(info[1].bonus_no)
+        })
         const numbersCopy = bonusChecked ? [...numbers, ...bonus] : numbers.slice(0)
         const accInfo = numbersCopy.reduce((acc,cur) => {
             if (!acc.hasOwnProperty(cur)) {
@@ -39,7 +40,7 @@ function Amount() {
             result.push(
                 <td className="align-bottom overflow-hidden text-center" key={i}>
                     <div className="flex justify-center items-end relative" style={{height: `200px`}}>
-                        <span className={`w-3/4 block graph bg-gray-${thisAccNum === latestNum ? 400 : 500} rounded-t-2xl transition-all duration-300 pt-2`} style={{height: `${200 * thisAccNum / latestNum }px`}}>{thisAccNum || ''}</span>
+                        <span className={`w-3/4 block graph bg-gray-${thisAccNum === latestNum ? 400 : 500} rounded-t-2xl transition-all duration-500`} style={{willChange: 'padding', height: '0', paddingTop: '5px', paddingBottom: `${195 * thisAccNum / latestNum }px`}}>{thisAccNum || ''}</span>
                     </div>
                 </td>
             )
@@ -53,11 +54,6 @@ function Amount() {
     const toggleWithBonus = () => {
         setBonusChecked(current => !current)
     }
-
-    useEffect(() => {
-        bodyTr()
-    }, [bonusChecked])
-
     return (
         <div id="amount" className="w-full overflow-hidden mt-10">
             <h2>번호별 당첨 횟수</h2>
@@ -72,10 +68,10 @@ function Amount() {
             <div className="tbl-wrap overflow-y-auto">
                 <table className="tbl-amount table m-auto">
                     <tfoot>
-                        {footTr()}
+                        {useMemo(() => footTr(), [])}
                     </tfoot>
                     <tbody>
-                        {bodyTr()}
+                        {useMemo(() => bodyTr(selectLottoInfo, bonusChecked), [selectLottoInfo, bonusChecked])}
                     </tbody>
                 </table>
             </div>

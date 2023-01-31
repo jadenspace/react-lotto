@@ -1,9 +1,10 @@
-import {useContext} from "react";
-import { LottoContext } from './Home';
+import {useMemo} from "react";
+import { selectLottoInfoState } from './Home';
+import {useRecoilValue} from "recoil";
 
 function List() {
-    const { selectLottoInfo } = useContext(LottoContext)
-    const bodyTr = () => {
+    const selectLottoInfo = useRecoilValue(selectLottoInfoState)
+    const bodyTr = (selectLottoInfo) => {
         const result = Object.entries(JSON.parse(selectLottoInfo)).map((info, idx) => {
             const turn = `제 ${info[0]} 회`
             const numbers = info[1].numbers.map((number, i) => {
@@ -47,7 +48,7 @@ function List() {
                         </tr>
                     </thead>
                     <tbody>
-                        {bodyTr()}
+                        {useMemo(() => bodyTr(selectLottoInfo), [selectLottoInfo])}
                     </tbody>
                 </table>
             </div>

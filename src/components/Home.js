@@ -1,5 +1,6 @@
 import {useQueries, useQuery} from 'react-query';
-import { useState, useEffect, createContext } from 'react';
+import { useState, useEffect, useLayoutEffect, createContext } from 'react';
+import { atom, useSetRecoilState } from 'recoil';
 import axios from 'axios';
 import Search from "./Search";
 import Amount from "./Amount";
@@ -10,6 +11,17 @@ export const LottoContext = createContext()
 const LATEST_URL = `https://smok95.github.io/lotto/results/latest.json`;
 const getRoundInfoUrl = (num) => `https://smok95.github.io/lotto/results/${num}.json`;
 
+
+export const selectLottoInfoState = atom({
+    key: 'selectLottoInfoState',
+    default: {}
+})
+
+export const inputValueState = atom({
+    key: 'inputValueState',
+    default: {}
+})
+
 function Home() {
     const [lastestNumber, setLatestNumber] = useState(99999)
     const [searchMode, setSearchMode] = useState(false)
@@ -17,8 +29,10 @@ function Home() {
     const [isProgress, setIsProgress] = useState(true)
     const [fromRound, setFromRound] = useState('')
     const [toRound, setToRound] = useState('')
-    const [inputValue, setInputValue] = useState({})
-    const [selectLottoInfo, setSelectLottoInfo] = useState({})
+    // const [inputValue, setInputValue] = useState({})
+    // const [selectLottoInfo, setSelectLottoInfo] = useState({})
+    const setSelectLottoInfo = useSetRecoilState(selectLottoInfoState)
+    const setInputValue = useSetRecoilState(inputValueState)
 
     let latestDrawNo
     let from
@@ -28,7 +42,10 @@ function Home() {
 
     const { data: dataLatest } = useQuery(
         ['latest'],
-        () => axios.get(LATEST_URL)
+        () => axios.get(LATEST_URL),
+        {
+            staleTime: 1000 * 60,
+        }
     )
     const init = () => {
         latestDrawNo = dataLatest?.data.draw_no - 1
@@ -40,11 +57,15 @@ function Home() {
         latestIndex = latestDrawNo
     }
     init()
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!!latestIndex) {
             setLatestNumber(latestDrawNo)
             setFromRound(from)
             setToRound(to)
+            setInputValue({
+                from: from,
+                to: to
+            })
         }
     } , [latestIndex])
 
@@ -53,6 +74,7 @@ function Home() {
             return {
                 queryKey: ['lotto', number],
                 queryFn: () => axios.get(getRoundInfoUrl(number)),
+                staleTime: 1000 * 60,
                 enabled: !!latestIndex
             }
         })
@@ -91,7 +113,7 @@ function Home() {
     }
 
     return (
-        <LottoContext.Provider value={{lastestNumber, inputValue, setInputValue, selectLottoInfo, searchMode, setSearchMode, isSearch, setIsSearch, isProgress, setIsProgress, fromRound, setFromRound, toRound, setToRound }}>
+        <LottoContext.Provider value={{lastestNumber, searchMode, setSearchMode, isSearch, setIsSearch, isProgress, setIsProgress, fromRound, setFromRound, toRound, setToRound }}>
             <div className="layout overflow-hidden text-white">
                 <Search />
                 <Amount  />
