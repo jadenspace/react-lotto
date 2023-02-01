@@ -3,18 +3,19 @@ import {useRecoilState} from 'recoil';
 import { inputValueState, LottoContext } from './Home';
 
 function Search() {
-    const {lastestNumber, setSearchMode, isSearch, setIsSearch, setFromRound, setToRound, setIsProgress} = useContext(LottoContext)
-    const [inputValue, setInputValue] = useRecoilState(inputValueState)
-    const updateTurnRange = (e) => {
-        const obj = {}
-        obj[e.target.dataset.part] = +e.target.value
-        setInputValue(current => ({
+    const {lastestNumber, setSearchMode, isSearch, setIsSearch, setFromRound, setToRound, setIsProgress}: any = useContext(LottoContext)
+    const [inputValue, setInputValue]: Array<any> = useRecoilState(inputValueState)
+    const updateTurnRange = (e: any) => {
+        const obj: any = {}
+        const partData: string = e.target.dataset.part
+        obj[partData] = +e.target.value
+        setInputValue((current: object) => ({
             ...current,
             ...obj
         }))
     }
 
-    const getPossibleValue = (value) => Math.min(lastestNumber+1, Math.max(1, value))
+    const getPossibleValue = (value: number) => Math.min(lastestNumber+1, Math.max(1, value))
     const onClick = () => {
         const fromValue = getPossibleValue(inputValue.from)
         const toValue = getPossibleValue(inputValue.to)

@@ -1,6 +1,6 @@
 import {useMemo, useState} from "react";
 import {useRecoilValue} from "recoil";
-import { selectLottoInfoState } from './Home';
+import { selectLottoInfoState, lottoInfoData } from './Home';
 
 function Amount() {
     const selectLottoInfo = useRecoilValue(selectLottoInfoState)
@@ -18,25 +18,25 @@ function Amount() {
             </tr>
         )
     }
-    const bodyTr = (selectLottoInfo, bonusChecked) => {
-        const bonus = []
-        const numbers = []
+    const bodyTr = (selectLottoInfo: Array<lottoInfoData>, bonusChecked: boolean) => {
+        const bonus: Array<number> = []
+        const numbers: Array<number> = []
         const result = []
-        Object.entries(JSON.parse(selectLottoInfo)).map((info, idx) => {
-            numbers.push(...info[1].numbers)
-            bonus.push(info[1].bonus_no)
+        selectLottoInfo.map((info: lottoInfoData) => {
+            numbers.push(...info.numbers)
+            bonus.push(info.bonus_no)
         })
         const numbersCopy = bonusChecked ? [...numbers, ...bonus] : numbers.slice(0)
-        const accInfo = numbersCopy.reduce((acc,cur) => {
+        const accInfo: Object = numbersCopy.reduce((acc: any, cur: any) => {
             if (!acc.hasOwnProperty(cur)) {
                 acc[cur] = 0
             }
             acc[cur]++
             return acc
         }, {})
-        const latestNum = Math.max(...Object.values(accInfo))
-        for (let i = 1; i <= 45; i++) {
-            const thisAccNum = accInfo[i] ? accInfo[i] : 0
+        const latestNum: any = Math.max(...Object.values(accInfo))
+        for (let i: any = 1; i <= 45; i++) {
+            const thisAccNum: any = accInfo[i as keyof typeof accInfo] || 0
             result.push(
                 <td className="align-bottom overflow-hidden text-center" key={i}>
                     <div className="flex justify-center items-end relative" style={{height: `200px`}}>

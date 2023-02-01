@@ -6,15 +6,22 @@ import Search from "./Search";
 import Amount from "./Amount";
 import List from "./List";
 
-export const LottoContext = createContext()
+export const LottoContext = createContext({})
 
 const LATEST_URL = `https://smok95.github.io/lotto/results/latest.json`;
-const getRoundInfoUrl = (num) => `https://smok95.github.io/lotto/results/${num}.json`;
+const getRoundInfoUrl = (num: any) => `https://smok95.github.io/lotto/results/${num}.json`;
 
+export interface lottoInfoData {
+    draw_no: number;
+    date: string;
+    numbers: Array<number>;
+    bonus_no: number;
+    winners_combination: any;
+}
 
 export const selectLottoInfoState = atom({
     key: 'selectLottoInfoState',
-    default: {}
+    default: []
 })
 
 export const inputValueState = atom({
@@ -27,18 +34,18 @@ function Home() {
     const [searchMode, setSearchMode] = useState(false)
     const [isSearch, setIsSearch] = useState(true)
     const [isProgress, setIsProgress] = useState(true)
-    const [fromRound, setFromRound] = useState('')
-    const [toRound, setToRound] = useState('')
+    const [fromRound, setFromRound] = useState(0)
+    const [toRound, setToRound] = useState(0)
     // const [inputValue, setInputValue] = useState({})
     // const [selectLottoInfo, setSelectLottoInfo] = useState({})
     const setSelectLottoInfo = useSetRecoilState(selectLottoInfoState)
     const setInputValue = useSetRecoilState(inputValueState)
 
-    let latestDrawNo
-    let from
-    let to
-    let valueFromTo = []
-    let latestIndex
+    let latestDrawNo: number
+    let from: number
+    let to: number
+    let valueFromTo: Array<number> = []
+    let latestIndex: number = 0
 
     const { data: dataLatest } = useQuery(
         ['latest'],
@@ -70,7 +77,7 @@ function Home() {
     } , [latestIndex])
 
     const ress = useQueries(
-        valueFromTo?.map((number) => {
+        valueFromTo?.map((number: any) => {
             return {
                 queryKey: ['lotto', number],
                 queryFn: () => axios.get(getRoundInfoUrl(number)),
@@ -81,15 +88,11 @@ function Home() {
     )
     useEffect(() => {
         if (ress.length && !ress.some(res => res.isLoading)) {
-            const info = JSON.stringify(
-                Object.fromEntries(
-                    ress.map((res, idx) => {
-                        const { data } = res.data
-                        const { date, numbers, bonus_no, divisions, winners_combination } = data
-                        return [data.draw_no, { date, numbers, bonus_no, divisions, winners_combination }]
-                    })
-                )
-            )
+            const info: any = ress.map((res) => {
+                const { data }: any = res.data
+                const { draw_no, date, numbers, bonus_no, divisions, winners_combination } = data
+                return { draw_no, date, numbers, bonus_no, divisions, winners_combination }
+            })
             setSelectLottoInfo(info)
             setIsProgress(false)
             setIsSearch(false)

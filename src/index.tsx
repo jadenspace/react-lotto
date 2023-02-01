@@ -5,7 +5,7 @@ import App from './App';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 const queryClient = new QueryClient()
 root.render(
   <React.StrictMode>
