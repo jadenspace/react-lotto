@@ -40,7 +40,7 @@ function Amount() {
             result.push(
                 <td className="align-bottom overflow-hidden text-center" key={i}>
                     <div className="flex justify-center items-end relative" style={{height: `200px`}}>
-                        <span className={`w-3/4 block graph bg-gray-${thisAccNum === latestNum ? 400 : 500} rounded-t-2xl transition-all duration-500`} style={{willChange: 'padding', height: '0', paddingTop: '5px', paddingBottom: `${195 * thisAccNum / latestNum }px`}}>{thisAccNum || ''}</span>
+                        <span className={`w-3/4 block absolute bottom-0 h-0 graph bg-gray-${thisAccNum === latestNum ? 400 : 500} rounded-t-2xl transition-all duration-500`} style={{paddingTop: '5px', paddingBottom: `${195 * thisAccNum / latestNum }px`}}>{thisAccNum || ''}</span>
                     </div>
                 </td>
             )

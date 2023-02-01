@@ -1,10 +1,28 @@
-import {useContext} from 'react';
-import {useRecoilState} from 'recoil';
-import { inputValueState, LottoContext } from './Home';
+import {selector, useRecoilState, useRecoilValue} from 'recoil';
+import {
+    fromRoundState,
+    inputValueState,
+    isProgressState,
+    isSearchState,
+    lastestNumberState,
+    searchModeState,
+    toRoundState
+} from './Home';
+
+const calcLatestNumberSelector = selector({
+    key: 'calcLatestNumber',
+    get: ({get}) => get(lastestNumberState) + 1
+})
 
 function Search() {
-    const {lastestNumber, setSearchMode, isSearch, setIsSearch, setFromRound, setToRound, setIsProgress}: any = useContext(LottoContext)
+    const [, setSearchMode] = useRecoilState(searchModeState)
+    const [isSearch, setIsSearch] = useRecoilState(isSearchState)
+    const [, setIsProgress] = useRecoilState(isProgressState)
+    const [, setFromRound] = useRecoilState(fromRoundState)
+    const [, setToRound] = useRecoilState(toRoundState)
     const [inputValue, setInputValue]: Array<any> = useRecoilState(inputValueState)
+    const calcLatestNumber: number = useRecoilValue(calcLatestNumberSelector)
+
     const updateTurnRange = (e: any) => {
         const obj: any = {}
         const partData: string = e.target.dataset.part
@@ -15,7 +33,7 @@ function Search() {
         }))
     }
 
-    const getPossibleValue = (value: number) => Math.min(lastestNumber+1, Math.max(1, value))
+    const getPossibleValue = (value: number) => Math.min(calcLatestNumber, Math.max(1, value))
     const onClick = () => {
         const fromValue = getPossibleValue(inputValue.from)
         const toValue = getPossibleValue(inputValue.to)
@@ -41,11 +59,11 @@ function Search() {
 
     return (
         <div className="search-area flex justify-center items-center mt-10">
-            <input type="number" id="oldPrd" min="1" max={lastestNumber+1} className="ipt-text" data-part="from"
+            <input type="number" id="oldPrd" min="1" max={calcLatestNumber} className="ipt-text" data-part="from"
                    onInput={updateTurnRange} onKeyUp={e => e.keyCode === 13 ? onClick() : null} value={inputValue.from || ''} required/>
             <label htmlFor="oldPrd" className="ml-1"> 회</label>
             &nbsp;~&nbsp;
-            <input type="number" id="latestPrd" min="1" className="ipt-text" data-part="to" max={lastestNumber+1}
+            <input type="number" id="latestPrd" min="1" className="ipt-text" data-part="to" max={calcLatestNumber}
                    onInput={updateTurnRange} onKeyUp={e => e.keyCode === 13 ? onClick() : null} value={inputValue.to || ''} required/>
             <label htmlFor="latestPrd" className="ml-1"> 회</label>
             <button type="button" className="btn btn-gradient ml-5" onClick={onClick}>

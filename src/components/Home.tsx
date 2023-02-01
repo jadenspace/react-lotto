@@ -1,12 +1,10 @@
 import {useQueries, useQuery} from 'react-query';
-import { useState, useEffect, useLayoutEffect, createContext } from 'react';
-import { atom, useSetRecoilState } from 'recoil';
+import { useEffect, useLayoutEffect } from 'react';
+import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import axios from 'axios';
 import Search from "./Search";
 import Amount from "./Amount";
 import List from "./List";
-
-export const LottoContext = createContext({})
 
 const LATEST_URL = `https://smok95.github.io/lotto/results/latest.json`;
 const getRoundInfoUrl = (num: any) => `https://smok95.github.io/lotto/results/${num}.json`;
@@ -19,25 +17,46 @@ export interface lottoInfoData {
     winners_combination: any;
 }
 
+export const lastestNumberState = atom({
+    key: 'lastestNumberState',
+    default: 99999,
+})
+export const searchModeState = atom({
+    key: 'searchModeState',
+    default: false
+})
+export const isSearchState = atom({
+    key: 'isSearchState',
+    default: true
+})
+export const isProgressState = atom({
+    key: 'isProgressState',
+    default: true
+})
+export const fromRoundState = atom({
+    key: 'fromRoundState',
+    default: 0
+})
+export const toRoundState = atom({
+    key: 'toRoundState',
+    default: 0
+})
 export const selectLottoInfoState = atom({
     key: 'selectLottoInfoState',
     default: []
 })
-
 export const inputValueState = atom({
     key: 'inputValueState',
     default: {}
 })
 
 function Home() {
-    const [lastestNumber, setLatestNumber] = useState(99999)
-    const [searchMode, setSearchMode] = useState(false)
-    const [isSearch, setIsSearch] = useState(true)
-    const [isProgress, setIsProgress] = useState(true)
-    const [fromRound, setFromRound] = useState(0)
-    const [toRound, setToRound] = useState(0)
-    // const [inputValue, setInputValue] = useState({})
-    // const [selectLottoInfo, setSelectLottoInfo] = useState({})
+    const [, setLatestNumber] = useRecoilState(lastestNumberState)
+    const [searchMode,] = useRecoilState(searchModeState)
+    const [, setIsSearch] = useRecoilState(isSearchState)
+    const [isProgress, setIsProgress] = useRecoilState(isProgressState)
+    const [fromRound, setFromRound] = useRecoilState(fromRoundState)
+    const [toRound, setToRound] = useRecoilState(toRoundState)
     const setSelectLottoInfo = useSetRecoilState(selectLottoInfoState)
     const setInputValue = useSetRecoilState(inputValueState)
 
@@ -116,13 +135,11 @@ function Home() {
     }
 
     return (
-        <LottoContext.Provider value={{lastestNumber, searchMode, setSearchMode, isSearch, setIsSearch, isProgress, setIsProgress, fromRound, setFromRound, toRound, setToRound }}>
             <div className="layout overflow-hidden text-white">
                 <Search />
                 <Amount  />
                 <List  />
             </div>
-        </LottoContext.Provider>
     );
 }
 
