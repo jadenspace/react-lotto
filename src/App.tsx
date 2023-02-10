@@ -8,7 +8,7 @@ function App() {
         <RecoilRoot>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/lotto" element={<Home />} />
                 </Routes>
             </BrowserRouter>
         </RecoilRoot>
